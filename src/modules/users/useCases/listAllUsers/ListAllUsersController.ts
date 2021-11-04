@@ -7,8 +7,9 @@ class ListAllUsersController {
 
   handle(request: Request, response: Response): Response {
     try {
-      const { user_id } = request.params
+      const { user_id } = request.query
       const users = this.listAllUsersUseCase.execute({ user_id });
+
       return response.send(users);
     } catch (error) {
       return response.status(400).send(error.message);
