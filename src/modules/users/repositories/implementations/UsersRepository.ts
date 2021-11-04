@@ -1,0 +1,69 @@
+import { User } from "../../model/User";
+import { IUsersRepository, ICreateUserDTO } from "../IUsersRepository";
+
+class UsersRepository implements IUsersRepository {
+  private users: User[];
+
+  private static INSTANCE: UsersRepository;
+
+  private constructor() {
+    this.users = [];
+  }
+
+  public static getInstance(): UsersRepository {
+    if (!UsersRepository.INSTANCE) {
+      UsersRepository.INSTANCE = new UsersRepository();
+    }
+
+    return UsersRepository.INSTANCE;
+  }
+
+  create({ name, email }: ICreateUserDTO): User {
+    const user = new User();
+    Object.assign(user, {
+      name,
+      email,
+      created_at: new Date()
+    });
+
+   this.users.push(user)
+   return user
+  }
+
+  findById(id: string): User | undefined {
+    const userId = this.users.find(userId => userId.id === id);
+    return userId;
+  }
+
+  findByEmail(email: string): User | undefined {
+    const userEmail = this.users.find(userEmail => userEmail.email === email);
+    return userEmail;
+  }
+
+  turnAdmin(receivedUser: User): User {
+    const receive = this.users.find((receive) => receive.admin === receivedUser.admin);
+    receive.admin = true
+    receive.updated_at = new Date();
+    const update = {
+      ...receive,
+      admin: receive.admin,
+      updated_at: receive.updated_at
+    }
+
+    const newUsers = this.users.map( user => {
+      if(user.id === receivedUser.id){
+        user = update;
+      }
+      return user
+    })
+
+    
+    return update
+  }
+  
+  list(): User[] {
+    return this.users; 
+  }
+}
+
+export { UsersRepository };
